@@ -8,9 +8,19 @@
 </head>
 <body>
 <header>
-    <div class="in">
+<div class="in">
         <a class="brand" href="{{ route('home') }}">Garuda-Hub</a>
         <a href="{{ route('home') }}">Proyek</a>
+        @auth
+            <span>{{ auth()->user()->nama }} ({{ auth()->user()->role }})</span>
+            <form class="inline" method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="sm sec" type="submit">Keluar</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}">Masuk</a>
+            <a href="{{ route('register') }}">Daftar</a>
+        @endauth
     </div>
 </header>
 <main>
