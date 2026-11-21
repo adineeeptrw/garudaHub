@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BidController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ProjectController::class, 'index'])->name('home');
 
+// Tamu
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
@@ -18,10 +20,15 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:klien')->group(function () {
         Route::resource('projects', ProjectController::class)->only(['create', 'store', 'edit', 'update']);
+        Route::post('/projects/{project}/bids/{bid}/pick', [BidController::class, 'pick'])->name('bids.pick');
     });
 
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+
+    Route::middleware('role:developer')->group(function () {
+        Route::post('/projects/{project}/bids', [BidController::class, 'store'])->name('bids.store');
+        Route::resource('bids', BidController::class)->only(['edit', 'update', 'destroy']);
+    });
 });
 
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->whereNumber('project')->name('projects.show');
-
