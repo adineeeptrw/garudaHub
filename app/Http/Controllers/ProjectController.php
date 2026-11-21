@@ -49,7 +49,7 @@ class ProjectController extends Controller
     {
         Gate::authorize('create', Project::class);
 
-        $project = request->user()->projects()->create(request->validated());
+        $project = $request->user()->projects()->create($request->validated());
 
         return redirect()->route('projects.show', $project)->with('ok', 'Proyek berhasil dipasang.');
     }
@@ -65,17 +65,19 @@ class ProjectController extends Controller
     {
         Gate::authorize('update', $project);
 
-        project->update(request->validated());
+        $project->update($request->validated());
 
         return redirect()->route('projects.show', $project)->with('ok', 'Proyek berhasil diperbarui.');
     }
 
-    public function destroy(Project $project): RedirectResponse
+    public function destroy(Request $request, Project $project): RedirectResponse
     {
         Gate::authorize('delete', $project);
 
         $project->delete();
 
-        return redirect()->route('home')->with('ok', 'Proyek dihapus.');
+        $to = $request->user()->isAdmin() ? route('admin.index') : route('dashboard');
+
+        return redirect($to)->with('ok', 'Proyek dihapus.');
     }
 }

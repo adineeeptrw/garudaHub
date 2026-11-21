@@ -20,8 +20,8 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        user=newUser(data);
-        $user->role = $data['role']; // sudah dibatasi ke SELF_ROLES oleh RegisterRequest
+        $user = new User($data);
+        $user->role = $data['role'];
         $user->save();
 
         return redirect()->route('login')->with('ok', 'Pendaftaran berhasil. Silakan masuk.');
@@ -38,7 +38,7 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:100'],
             'password' => ['required', 'string', 'max:1024'],
         ]);
-        credentials['email']=strtolower(trim(credentials['email']));
+        $credentials['email']=strtolower(trim($credentials['email']));
 
         if (! Auth::attempt($credentials)) {
             return back()->withErrors(['email' => 'Email atau password salah.'])->onlyInput('email');
@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('home'))->with('ok', 'Selamat datang kembali.');
+        return redirect()->intended(route('dashboard'))->with('ok', 'Selamat datang kembali.');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -55,6 +55,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home')->with('ok', 'Anda telah keluar.');
+       return redirect()->route('home')->with('ok', 'Anda telah keluar.');
     }
 }
