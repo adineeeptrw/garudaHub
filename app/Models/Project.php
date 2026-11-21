@@ -55,7 +55,7 @@ class Project extends Model
         if ($term === '') {
             return $query;
         }
-        like='%'.addcslashes(term, '\\%_').'%';
+        $like = '%'.addcslashes($term, '\\%_').'%';
 
         return $query->where(fn (Builder $q) => $q->where('judul', 'like', $like)->orWhere('kategori', 'like', $like));
     }
@@ -66,4 +66,3 @@ class Project extends Model
         return $this->status === self::STATUS_OPEN && $this->batas_lelang->endOfDay()->isFuture();
     }
 }
-
