@@ -13,10 +13,24 @@ __pycache__/
 # Lokal Claude
 .claude/settings.local.json
 
-# Perkakas tim agen (tidak dipublikasikan)
+
 .claude/
 CLAUDE.md
 SETUP.md
 
-# Kunci jawaban celah untuk dosen (tidak dipublikasikan)
+
 docs/VULNERABILITIES.md
+
+!.env.example
+/vendor
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/auth.json
+*.log
+.phpunit.result.cache
+/.phpunit.cache
+/.idea
+/.vscode
