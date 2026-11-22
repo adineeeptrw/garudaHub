@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>@yield('title', 'Proyek') - Garuda-Hub</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="{{ asset('js/app.js') }}" defer></script>
+
 </head>
 <body>
 <header>
-<div class="in">
+   <div class="in">
         <a class="brand" href="{{ route('home') }}">Garuda-Hub</a>
         <a href="{{ route('home') }}">Proyek</a>
         @auth
-             @if (auth()->user()->role === 'klien')
+            @if (auth()->user()->role === 'klien')
                 <a href="{{ route('projects.create') }}">Pasang Proyek</a>
             @endif
-
+            @if (auth()->user()->isAdmin())
+                <a href="{{ route('admin.index') }}">Admin</a>
+            @else
+                <a href="{{ route('dashboard') }}">Dasbor</a>
+            @endif
             <span>{{ auth()->user()->nama }} ({{ auth()->user()->role }})</span>
             <form class="inline" method="POST" action="{{ route('logout') }}">
                 @csrf
