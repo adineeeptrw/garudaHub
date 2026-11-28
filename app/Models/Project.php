@@ -12,13 +12,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Project extends Model
 {
-    /** @use HasFactory<ProjectFactory> */
     use HasFactory;
 
     public const STATUS_OPEN = 'terbuka';
     public const STATUS_CLOSED = 'ditutup';
 
-    // client_id & status diisi oleh controller, bukan dari form
     protected $fillable = ['judul', 'deskripsi', 'kategori', 'budget_min', 'budget_max', 'batas_lelang'];
 
     protected $attributes = ['status' => self::STATUS_OPEN];
@@ -48,7 +46,11 @@ class Project extends Model
         return $this->hasOne(Bid::class)->where('is_winner', true);
     }
 
-    /** Cari berdasarkan judul atau kategori */
+    public function rating(): HasOne
+    {
+        return $this->hasOne(Rating::class);
+    }
+
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         $term = trim((string) $term);
@@ -60,7 +62,6 @@ class Project extends Model
         return $query->where(fn (Builder $q) => $q->where('judul', 'like', $like)->orWhere('kategori', 'like', $like));
     }
 
-    /** Lelang masih menerima penawaran: status terbuka dan batas belum lewat */
     public function isOpen(): bool
     {
         return $this->status === self::STATUS_OPEN && $this->batas_lelang->endOfDay()->isFuture();

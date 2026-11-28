@@ -10,12 +10,10 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     public const ROLES = ['klien', 'developer', 'admin'];
 
-    /** Peran yang boleh dipilih sendiri saat mendaftar */
     public const SELF_ROLES = ['klien', 'developer'];
 
     protected $fillable = ['nama', 'email', 'password'];
@@ -27,17 +25,21 @@ class User extends Authenticatable
         return ['password' => 'hashed'];
     }
 
-    /** Proyek yang dipasang user ini (sebagai klien) */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'client_id');
     }
 
-    /** Penawaran yang diajukan user ini (sebagai developer) */
     public function bids(): HasMany
     {
         return $this->hasMany(Bid::class, 'developer_id');
     }
+
+    public function ratingsReceived(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'developer_id');
+    }
+
 
     public function hasRole(string ...$roles): bool
     {
