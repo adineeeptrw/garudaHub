@@ -45,6 +45,10 @@
                     <tr class="{{ $bid->is_winner ? 'winner' : '' }}">
                         <td>
                             {{ $bid->developer->nama }}
+                            @if ($bid->developer->ratings_received_avg_nilai)
+                                <span class="muted">★
+                                    {{ number_format($bid->developer->ratings_received_avg_nilai, 1) }}</span>
+                            @endif
                             @if ($bid->is_winner)
                                 <span class="badge win">Pemenang</span>
                             @endif
@@ -67,11 +71,52 @@
         @endif
     </div>
 
+    @if ($project->rating)
+        <div class="card">
+            <h2>Rating untuk Developer</h2>
+            <p>{{ str_repeat('★', $project->rating->nilai) }}{{ str_repeat('☆', 5 - $project->rating->nilai) }}
+                ({{ $project->rating->nilai }}/5)</p>
+            @if ($project->rating->komentar)
+                <p>{!! nl2br(e($project->rating->komentar)) !!}</p>
+            @endif
+        </div>
+    @else
+        @can('create', [App\Models\Rating::class, $project])
+            <div class="card">
+                <h2>Beri Rating Developer</h2>
+                <form method="POST" action="{{ route('ratings.store', $project) }}">
+                    @csrf
+                    <p>
+                        <label for="nilai">Nilai</label>
+                        <select id="nilai" name="nilai" required>
+                            <option value="">-- pilih --</option>
+                            @for ($i = 5; $i >= 1; $i--)
+                                <option value="{{ $i }}" @selected(old('nilai') == $i)>{{ $i }} ★
+                                </option>
+                            @endfor
+                        </select>
+                        @error('nilai')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
+                    </p>
+                    <p>
+                        <label for="komentar">Komentar (opsional)</label>
+                        <textarea id="komentar" name="komentar" rows="3" maxlength="1000">{{ old('komentar') }}</textarea>
+                        @error('komentar')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
+                    </p>
+                    <p><button type="submit">Kirim rating</button></p>
+                </form>
+            </div>
+        @endcan
+    @endif
+
     @if ($user && $user->role === 'developer')
         @if ($myBid)
             <div class="card">
                 <h2>Penawaran Anda</h2>
-                <p class="muted">@rupiah($myBid->harga) Â· {{ $myBid->durasi }} hari</p>
+                <p class="muted">@rupiah($myBid->harga) · {{ $myBid->durasi }} hari</p>
                 @can('update', $myBid)
                     <div class="actions">
                         <a class="btn sec sm" href="{{ route('bids.edit', $myBid) }}">Ubah penawaran</a>
